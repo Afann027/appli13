@@ -206,14 +206,14 @@ class YziApiAbstract(models.Model):
                     if 'name' in sub_fields_dict and sub_fields_dict['name']['type'] in ['char', 'text', 'html']:
                         json_dict[name]['name'] = eval('record.' + name + '.name')
                 elif field['type'] == 'many2many' or field['type'] == 'one2many':
-                    json_dict[name] = {}
+                    json_dict[name] = []
                     for sub_rec in eval('record.' + name):
-                        json_dict[name][sub_rec.id] = {
-                            'id': sub_rec.id
-                        }
+                        element = {'id': sub_rec.id}
                         sub_fields_dict = sub_rec.fields_get()
                         if 'name' in sub_fields_dict and sub_fields_dict['name']['type'] in ['char', 'text', 'html']:
-                            json_dict[name][sub_rec.id]['name'] = sub_rec.name
+                            element['name'] = sub_rec.name
+
+                        json_dict[name].append(element)
                 # if binary, change it in string
                 elif field['type'] == 'binary':
                     json_dict[name] = eval('record.' + name).decode('utf-8') if type(eval('record.' + name)) is bytes else eval('record.' + name)
